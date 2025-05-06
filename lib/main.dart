@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sholat/flower/model.dart';
 import 'package:sholat/flower/painter.dart';
 import 'package:sholat/flower/view.dart';
 import 'package:sholat/future/view.dart';
@@ -26,21 +27,18 @@ class MainApp extends StatelessWidget {
               child:
                   (location) => FutureView(
                     future: PrayerTimeService.getBaseOnLocation(
-                      // latitude: location.latitude,
-                      // longitude: location.longitude,
-                      latitude: 7.8014,
-                      longitude: 110.3648,
+                      latitude: location.latitude,
+                      longitude: location.longitude,
                     ),
                     child: (data) {
                       final date = data.data.date;
                       final masehi = date.gregorian;
                       final hijri = date.hijri;
+                      final shalat = data.data.timings;
                       return FutureView(
                         future: LocationService.getCityName(
                           latitude: location.latitude,
                           longitude: location.longitude,
-                          // latitude: 7.8014,
-                          // longitude: 110.3648,
                         ),
                         child: (city) {
                           print("city $city");
@@ -64,9 +62,45 @@ class MainApp extends StatelessWidget {
                               ),
                               Expanded(
                                 child: Center(
-                                  child: CustomPaint(
-                                    size: Size(300, 300),
-                                    painter: FlowerPainter(),
+                                  child: FlowerView(
+                                    texts: [
+                                      PainterText(
+                                        title: "Dzuhur",
+                                        subtitle: shalat.dhuhr,
+                                        isMuted: false,
+                                        onTap: () {},
+                                      ),
+                                      PainterText(
+                                        title: "Asr",
+                                        subtitle: shalat.asr,
+                                        isMuted: false,
+                                        onTap: () {},
+                                      ),
+                                      PainterText(
+                                        title: "Magrib",
+                                        subtitle: shalat.maghrib,
+                                        isMuted: false,
+                                        onTap: () {},
+                                      ),
+                                      PainterText(
+                                        title: "Isya",
+                                        subtitle: shalat.isha,
+                                        isMuted: false,
+                                        onTap: () {},
+                                      ),
+                                      PainterText(
+                                        title: "Shubuh",
+                                        subtitle: shalat.fajr,
+                                        isMuted: true,
+                                        onTap: () {},
+                                      ),
+                                      PainterText(
+                                        title: "Terbit",
+                                        subtitle: shalat.sunrise,
+                                        isMuted: false,
+                                        onTap: () {},
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),

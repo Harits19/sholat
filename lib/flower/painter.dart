@@ -1,17 +1,26 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:sholat/flower/model.dart';
 
 class FlowerPainter extends CustomPainter {
+  final List<PainterText> texts;
+  final List<Path> petalPaths = [];
+
+  FlowerPainter({super.repaint, required this.texts});
+
   @override
   void paint(Canvas canvas, Size size) {
-    final int numberOfPetals = 6;
+    final int numberOfPetals = texts.length;
     final double radius = size.width / 1.7;
     final Paint paint = Paint()..color = Colors.pinkAccent;
 
     final Offset center = Offset(size.width / 2, size.height / 2);
+    petalPaths.clear();
 
-    for (int i = 0; i < numberOfPetals; i++) {
+    for (final item in texts.asMap().entries) {
+      final i = item.key;
+      final text = item.value;
       final double angle = (2 * pi / numberOfPetals) * i;
       final double x = center.dx + radius * cos(angle);
       final double y = center.dy + radius * sin(angle);
@@ -36,16 +45,26 @@ class FlowerPainter extends CustomPainter {
             ..close();
 
       canvas.drawPath(petal, paint);
+      petalPaths.add(petal);
 
       // Draw text on each petal
+      final icon = text.icon;
+
       final textPainter = TextPainter(
         text: TextSpan(
-          text: "$i",
+          text: text.title,
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 14,
           ),
+          children: [
+            TextSpan(text: '\n${text.subtitle}\n'),
+            TextSpan(
+              text: String.fromCharCode(icon.codePoint),
+              style: TextStyle(fontSize: 12, fontFamily: icon.fontFamily),
+            ),
+          ],
         ),
         textAlign: TextAlign.center,
         textDirection: TextDirection.ltr,
@@ -58,7 +77,22 @@ class FlowerPainter extends CustomPainter {
         center.dy + textRadius * sin(angle) - textPainter.height / 2,
       );
 
+      textPainter.layout();
       textPainter.paint(canvas, textOffset);
+
+      // final builder = TextPainter(
+      //   text: TextSpan(
+      //     text: String.fromCharCode(icon.codePoint),
+      //     style: TextStyle(
+      //       fontSize: 12,
+      //       fontFamily: icon.fontFamily,
+      //       color: Colors.black,
+      //     ),
+      //   ),
+      //   textDirection: TextDirection.ltr,
+      // );
+      // builder.layout();
+      // builder.paint(canvas, textOffset);
     }
 
     // Optional: draw the center of the flower

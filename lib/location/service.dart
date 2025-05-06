@@ -34,7 +34,9 @@ class LocationService {
 
     if (places.isNotEmpty) {
       final Placemark place = places.first;
-      return place.locality ?? 'Unknown city';
+      return (place.locality?.isNotEmpty ?? false)
+          ? place.locality!
+          : 'Unknown city';
     } else {
       return 'City not found';
     }
