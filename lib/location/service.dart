@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -40,5 +42,24 @@ class LocationService {
     } else {
       return 'City not found';
     }
+  }
+
+  static double getQiblaLocation({
+    required double latitude,
+    required double longitude,
+  }) {
+    const double kaabaLat = 21.4225;
+    const double kaabaLon = 39.8262;
+
+    final double deltaLon = (kaabaLon - longitude) * pi / 180;
+    final double userLatRad = latitude * pi / 180;
+    final double kaabaLatRad = kaabaLat * pi / 180;
+
+    final double y = sin(deltaLon);
+    final double x =
+        cos(userLatRad) * tan(kaabaLatRad) - sin(userLatRad) * cos(deltaLon);
+
+    double qiblaDirection = atan2(y, x) * 180 / pi;
+    return (qiblaDirection + 360) % 360; // normalize ke 0–360
   }
 }

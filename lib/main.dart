@@ -63,6 +63,7 @@ class MainApp extends StatelessWidget {
                               Expanded(
                                 child: Center(
                                   child: FlowerView(
+                                    position: location,
                                     texts: [
                                       PainterText(
                                         title: "Dzuhur",

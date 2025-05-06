@@ -6,18 +6,16 @@ import 'package:sholat/flower/model.dart';
 class FlowerPainter extends CustomPainter {
   final List<PainterText> texts;
   final List<Path> petalPaths = [];
+  final double qiblaAngle;
 
-  FlowerPainter({super.repaint, required this.texts});
+  FlowerPainter({super.repaint, required this.texts, required this.qiblaAngle});
 
-  @override
-  void paint(Canvas canvas, Size size) {
+  void _drawPetal(Canvas canvas, Size size, Offset center) {
+    petalPaths.clear();
+
     final int numberOfPetals = texts.length;
     final double radius = size.width / 1.7;
     final Paint paint = Paint()..color = Colors.pinkAccent;
-
-    final Offset center = Offset(size.width / 2, size.height / 2);
-    petalPaths.clear();
-
     for (final item in texts.asMap().entries) {
       final i = item.key;
       final text = item.value;
@@ -79,24 +77,52 @@ class FlowerPainter extends CustomPainter {
 
       textPainter.layout();
       textPainter.paint(canvas, textOffset);
-
-      // final builder = TextPainter(
-      //   text: TextSpan(
-      //     text: String.fromCharCode(icon.codePoint),
-      //     style: TextStyle(
-      //       fontSize: 12,
-      //       fontFamily: icon.fontFamily,
-      //       color: Colors.black,
-      //     ),
-      //   ),
-      //   textDirection: TextDirection.ltr,
-      // );
-      // builder.layout();
-      // builder.paint(canvas, textOffset);
     }
+  }
 
-    // Optional: draw the center of the flower
-    canvas.drawCircle(center, size.width / 3, Paint()..color = Colors.yellow);
+  void _drawCircle(Canvas canvas, Offset center, Size size) {
+    // canvas.drawCircle(center, size.width / 3, Paint()..color = Colors.yellow);
+
+    final radius = size.width / 3;
+
+    final Paint circlePaint = Paint()..color = Colors.yellow;
+
+    canvas.drawCircle(center, radius, circlePaint);
+
+    final double radians = qiblaAngle * (pi / 180);
+    final double needleLength = radius - 20;
+
+    final needleEnd = Offset(
+      center.dx + needleLength * sin(radians),
+      center.dy - needleLength * cos(radians),
+    );
+
+    final Paint needlePaint =
+        Paint()
+          ..color = Colors.red
+          ..strokeWidth = 4;
+
+    canvas.drawLine(center, needleEnd, needlePaint);
+    canvas.drawCircle(center, 6, Paint()..color = Colors.black);
+
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: 'Kiblat',
+        style: TextStyle(fontSize: 14, color: Colors.black),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+
+    textPainter.paint(canvas, needleEnd);
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Offset center = Offset(size.width / 2, size.height / 2);
+
+    _drawPetal(canvas, size, center);
+
+    _drawCircle(canvas, center, size);
   }
 
   @override
