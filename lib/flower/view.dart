@@ -17,10 +17,10 @@ class FlowerView extends StatefulWidget {
 
 class _FlowerViewState extends State<FlowerView> {
   final GlobalKey _paintKey = GlobalKey();
-  late FlowerPainter _painter;
-
-  double? _qiblaDirection;
-  double? _heading;
+  late FlowerPainter _painter = FlowerPainter(
+    texts: widget.texts,
+    qiblaAngle: 0,
+  );
 
   Future<void> _initLocationAndCompass() async {
     final position = widget.position;
@@ -31,9 +31,9 @@ class _FlowerViewState extends State<FlowerView> {
 
     FlutterCompass.events!.listen((event) {
       setState(() {
-        _heading = event.heading;
-        _qiblaDirection = qibla;
-        final angle = (_qiblaDirection! - _heading!) % 360;
+        final heading = event.heading;
+        final qiblaDirection = qibla;
+        final angle = (qiblaDirection - heading!) % 360;
 
         _painter = FlowerPainter(texts: widget.texts, qiblaAngle: angle);
       });
@@ -44,7 +44,6 @@ class _FlowerViewState extends State<FlowerView> {
   void initState() {
     super.initState();
     _initLocationAndCompass();
-    _painter = FlowerPainter(texts: widget.texts, qiblaAngle: 0);
   }
 
   void _handleTapDown(TapDownDetails details) {
@@ -67,11 +66,6 @@ class _FlowerViewState extends State<FlowerView> {
 
   @override
   Widget build(BuildContext context) {
-    if (_heading == null || _qiblaDirection == null) {
-      return Center(child: CircularProgressIndicator());
-    }
-
-
     return GestureDetector(
       onTapDown: _handleTapDown,
       child: CustomPaint(
