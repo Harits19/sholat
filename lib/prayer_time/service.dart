@@ -13,6 +13,8 @@ class PrayerTimeService {
     );
     final response = await get(url);
 
+    print(response.body);
+
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
       return PrayerTimeResponse.fromJson(jsonData);

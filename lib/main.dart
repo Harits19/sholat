@@ -4,6 +4,7 @@ import 'package:sholat/flower/view.dart';
 import 'package:sholat/future/view.dart';
 import 'package:sholat/info/view.dart';
 import 'package:sholat/location/service.dart';
+import 'package:sholat/prayer_time/service.dart';
 
 void main() {
   runApp(const MainApp());
@@ -21,26 +22,59 @@ class MainApp extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: FutureView(
-              future: Future.value(10),
+              future: LocationService.getCurrentLocation(),
               child:
-                  (data) => Column(
-                    children: [
-                      Row(
-                        children: [
-                          InfoView(title: "6", subtitle: "Mei"),
-                          InfoView(title: "Selasa", subtitle: "Jakarta"),
-                          InfoView(title: "8", subtitle: "Dzulqadah"),
-                        ],
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: CustomPaint(
-                            size: Size(300, 300),
-                            painter: FlowerPainter(),
-                          ),
+                  (location) => FutureView(
+                    future: PrayerTimeService.getBaseOnLocation(
+                      // latitude: location.latitude,
+                      // longitude: location.longitude,
+                      latitude: 7.8014,
+                      longitude: 110.3648,
+                    ),
+                    child: (data) {
+                      final date = data.data.date;
+                      final masehi = date.gregorian;
+                      final hijri = date.hijri;
+                      return FutureView(
+                        future: LocationService.getCityName(
+                          latitude: location.latitude,
+                          longitude: location.longitude,
+                          // latitude: 7.8014,
+                          // longitude: 110.3648,
                         ),
-                      ),
-                    ],
+                        child: (city) {
+                          print("city $city");
+                          return Column(
+                            children: [
+                              Row(
+                                children: [
+                                  InfoView(
+                                    title: masehi.day,
+                                    subtitle: masehi.month.en,
+                                  ),
+                                  InfoView(
+                                    title: masehi.weekday.en,
+                                    subtitle: city,
+                                  ),
+                                  InfoView(
+                                    title: hijri.day,
+                                    subtitle: hijri.month.en,
+                                  ),
+                                ],
+                              ),
+                              Expanded(
+                                child: Center(
+                                  child: CustomPaint(
+                                    size: Size(300, 300),
+                                    painter: FlowerPainter(),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
                   ),
             ),
           ),

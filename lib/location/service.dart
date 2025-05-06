@@ -1,3 +1,4 @@
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
 class LocationService {
@@ -23,5 +24,19 @@ class LocationService {
 
     // Get current position
     return await Geolocator.getCurrentPosition();
+  }
+
+  static Future<String> getCityName({
+    required double latitude,
+    required double longitude,
+  }) async {
+    final places = await placemarkFromCoordinates(latitude, longitude);
+
+    if (places.isNotEmpty) {
+      final Placemark place = places.first;
+      return place.locality ?? 'Unknown city';
+    } else {
+      return 'City not found';
+    }
   }
 }
