@@ -23,20 +23,20 @@ class FlowerPainter extends CustomPainter {
       final double x = center.dx + radius * cos(angle);
       final double y = center.dy + radius * sin(angle);
 
-      final duaPuluh = size.width / 3;
+      final bezierWidth = size.width / 3;
 
       final Path petal =
           Path()
             ..moveTo(center.dx, center.dy)
             ..quadraticBezierTo(
-              (center.dx + x) / 2 + duaPuluh * cos(angle - pi / 2),
-              (center.dy + y) / 2 + duaPuluh * sin(angle - pi / 2),
+              (center.dx + x) / 2 + bezierWidth * cos(angle - pi / 2),
+              (center.dy + y) / 2 + bezierWidth * sin(angle - pi / 2),
               x,
               y,
             )
             ..quadraticBezierTo(
-              (center.dx + x) / 2 + duaPuluh * cos(angle + pi / 2),
-              (center.dy + y) / 2 + duaPuluh * sin(angle + pi / 2),
+              (center.dx + x) / 2 + bezierWidth * cos(angle + pi / 2),
+              (center.dy + y) / 2 + bezierWidth * sin(angle + pi / 2),
               center.dx,
               center.dy,
             )
@@ -105,15 +105,6 @@ class FlowerPainter extends CustomPainter {
     canvas.drawLine(center, needleEnd, needlePaint);
     canvas.drawCircle(center, 6, Paint()..color = Colors.black);
 
-    final textPainter = TextPainter(
-      text: TextSpan(
-        text: 'Kiblat',
-        style: TextStyle(fontSize: 14, color: Colors.black),
-      ),
-      textDirection: TextDirection.ltr,
-    )..layout();
-
-    textPainter.paint(canvas, needleEnd);
   }
 
   @override

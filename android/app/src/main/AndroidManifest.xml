@@ -7,6 +7,15 @@
     android:label="sholat"
     android:name="${applicationName}"
     android:icon="@mipmap/ic_launcher">
+    <receiver android:name=".AlarmReceiver" />
+    <activity android:name=".AlarmActivity"
+      android:theme="@android:style/Theme.DeviceDefault.NoActionBar"
+      android:launchMode="singleTop"
+      android:excludeFromRecents="true"
+      android:showWhenLocked="true"
+      android:turnScreenOn="true"
+    />
+
     <activity
       android:name=".MainActivity"
       android:exported="true"

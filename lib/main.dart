@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sholat/flower/model.dart';
-import 'package:sholat/flower/painter.dart';
 import 'package:sholat/flower/view.dart';
 import 'package:sholat/future/view.dart';
 import 'package:sholat/info/view.dart';
@@ -41,7 +40,6 @@ class MainApp extends StatelessWidget {
                           longitude: location.longitude,
                         ),
                         child: (city) {
-                          print("city $city");
                           return Column(
                             children: [
                               Row(
