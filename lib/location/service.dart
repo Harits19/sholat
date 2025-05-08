@@ -33,12 +33,14 @@ class LocationService {
     required double longitude,
   }) async {
     final places = await placemarkFromCoordinates(latitude, longitude);
+    // final places = await placemarkFromCoordinates(-7.7520153, 110.4888925);
+
+    print('places $places');
 
     if (places.isNotEmpty) {
-      final Placemark place = places.first;
-      return (place.locality?.isNotEmpty ?? false)
-          ? place.locality!
-          : 'Unknown city';
+      final Placemark place = places.elementAtOrNull(1) ?? places.first;
+      final placeName = place.subLocality;
+      return (placeName?.isNotEmpty ?? false) ? placeName! : 'Unknown city';
     } else {
       return 'City not found';
     }

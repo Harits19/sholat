@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:sholat/string/service.dart';
+
 class PrayerTimeResponse {
   int code;
   String status;
@@ -415,17 +418,17 @@ class Params {
 }
 
 class Timings {
-  String fajr;
-  String sunrise;
-  String dhuhr;
-  String asr;
-  String sunset;
-  String maghrib;
-  String isha;
-  String imsak;
-  String midnight;
-  String firstthird;
-  String lastthird;
+  TimeOfDay fajr,
+      sunrise,
+      dhuhr,
+      asr,
+      sunset,
+      maghrib,
+      isha,
+      imsak,
+      midnight,
+      firstthird,
+      lastthird;
 
   Timings({
     required this.fajr,
@@ -445,19 +448,26 @@ class Timings {
 
   String toRawJson() => json.encode(toJson());
 
-  factory Timings.fromJson(Map<String, dynamic> json) => Timings(
-    fajr: json["Fajr"],
-    sunrise: json["Sunrise"],
-    dhuhr: json["Dhuhr"],
-    asr: json["Asr"],
-    sunset: json["Sunset"],
-    maghrib: json["Maghrib"],
-    isha: json["Isha"],
-    imsak: json["Imsak"],
-    midnight: json["Midnight"],
-    firstthird: json["Firstthird"],
-    lastthird: json["Lastthird"],
-  );
+  factory Timings.fromJson(Map<String, dynamic> json) {
+    try {
+      return Timings(
+        fajr: json["Fajr"]!.toString().toTimeOfDay(),
+        sunrise: json["Sunrise"]!.toString().toTimeOfDay(),
+        dhuhr: json["Dhuhr"]!.toString().toTimeOfDay(),
+        asr: json["Asr"]!.toString().toTimeOfDay(),
+        sunset: json["Sunset"]!.toString().toTimeOfDay(),
+        maghrib: json["Maghrib"]!.toString().toTimeOfDay(),
+        isha: json["Isha"]!.toString().toTimeOfDay(),
+        imsak: json["Imsak"]!.toString().toTimeOfDay(),
+        midnight: json["Midnight"]!.toString().toTimeOfDay(),
+        firstthird: json["Firstthird"]!.toString().toTimeOfDay(),
+        lastthird: json["Lastthird"]!.toString().toTimeOfDay(),
+      );
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
 
   Map<String, dynamic> toJson() => {
     "Fajr": fajr,

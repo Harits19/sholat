@@ -8,7 +8,7 @@ import 'package:sholat/location/service.dart';
 class FlowerView extends StatefulWidget {
   const FlowerView({super.key, required this.texts, required this.position});
 
-  final List<PainterText> texts;
+  final List<PrayerItem> texts;
   final Position position;
 
   @override
@@ -20,6 +20,7 @@ class _FlowerViewState extends State<FlowerView> {
   late FlowerPainter _painter = FlowerPainter(
     texts: widget.texts,
     qiblaAngle: 0,
+    context: context,
   );
 
   Future<void> _initLocationAndCompass() async {
@@ -29,14 +30,17 @@ class _FlowerViewState extends State<FlowerView> {
       longitude: position.longitude,
     );
 
-    FlutterCompass.events!.listen((event) {
-      setState(() {
-        final heading = event.heading;
-        final qiblaDirection = qibla;
-        final angle = (qiblaDirection - heading!) % 360;
-
-        _painter = FlowerPainter(texts: widget.texts, qiblaAngle: angle);
-      });
+    FlutterCompass.events!.distinct().listen((event) {
+      if (!mounted) return;
+      final heading = event.heading;
+      final qiblaDirection = qibla;
+      final angle = (qiblaDirection - heading!) % 360;
+      _painter = FlowerPainter(
+        texts: widget.texts,
+        qiblaAngle: angle,
+        context: context,
+      );
+      setState(() {});
     });
   }
 
@@ -54,9 +58,7 @@ class _FlowerViewState extends State<FlowerView> {
     for (int i = 0; i < _painter.petalPaths.length; i++) {
       if (_painter.petalPaths[i].contains(localPosition)) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Tapped on petal: ${_painter.texts[i].title}'),
-          ),
+          SnackBar(content: Text('Tapped on petal: ${_painter.texts[i].key}')),
         );
         widget.texts[i].onTap();
         break;

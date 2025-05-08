@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 
-class PainterText {
-  final String title, subtitle;
+class PrayerItem {
+  final String key;
+  final TimeOfDay time;
   final VoidCallback onTap;
   final IconData icon;
+  bool isActive;
 
-  PainterText({
-    required this.title,
-    required this.subtitle,
+  PrayerItem({
+    required this.key,
+    required this.time,
     required this.onTap,
     required bool isMuted,
+    required this.isActive,
   }) : icon = isMuted ? Icons.alarm_off : Icons.alarm;
 }

@@ -11,6 +11,7 @@ class PrayerTimeService {
     final url = Uri.parse(
       "https://api.aladhan.com/v1/timings/06-05-2025?latitude=$latitude&longitude=$longitude&method=20",
     );
+    print({ "url": url});
     final response = await get(url);
 
     print(response.body);

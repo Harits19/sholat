@@ -1,39 +1,129 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:sholat/alarm/service.dart';
 import 'package:sholat/flower/model.dart';
 import 'package:sholat/flower/view.dart';
 import 'package:sholat/future/view.dart';
 import 'package:sholat/info/view.dart';
 import 'package:sholat/location/service.dart';
+import 'package:sholat/prayer_time/model.dart';
 import 'package:sholat/prayer_time/service.dart';
 
 void main() {
   runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
+
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  int key = 0;
+
+  Future<PrayerTimeResponse> getPrayerTime(Position location) async {
+    final result = await PrayerTimeService.getBaseOnLocation(
+      latitude: location.latitude,
+      longitude: location.longitude,
+    );
+    await setPrayerTimings(result.data.timings);
+
+    return result;
+  }
+
+  Future<void> setPrayerTimings(Timings timings) async {
+    final prayerTimes = [
+      timings.fajr,
+      timings.sunrise,
+      timings.dhuhr,
+      timings.asr,
+      timings.maghrib,
+      timings.isha,
+    ];
+
+    for (final prayer in prayerTimes) {
+      await AlarmService.setAlarm(hour: prayer.hour, minute: prayer.minute);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      themeMode: ThemeMode.system,
+      darkTheme: ThemeData.dark(),
       home: Scaffold(
         appBar: AppBar(title: Text("Shalat")),
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: FutureView(
+              key: Key(key.toString()),
               future: LocationService.getCurrentLocation(),
               child:
                   (location) => FutureView(
-                    future: PrayerTimeService.getBaseOnLocation(
-                      latitude: location.latitude,
-                      longitude: location.longitude,
-                    ),
+                    future: getPrayerTime(location),
                     child: (data) {
                       final date = data.data.date;
                       final masehi = date.gregorian;
                       final hijri = date.hijri;
                       final shalat = data.data.timings;
+                      final listShalat = [
+                        PrayerItem(
+                          key: "Dzuhur",
+                          time: shalat.dhuhr,
+                          isMuted: false,
+                          isActive: false,
+                          onTap: () {},
+                        ),
+                        PrayerItem(
+                          key: "Asr",
+                          time: shalat.asr,
+                          isMuted: false,
+                          isActive: false,
+                          onTap: () {},
+                        ),
+                        PrayerItem(
+                          key: "Magrib",
+                          time: shalat.maghrib,
+                          isMuted: false,
+                          isActive: false,
+                          onTap: () {},
+                        ),
+                        PrayerItem(
+                          key: "Isya",
+                          time: shalat.isha,
+                          isMuted: false,
+                          isActive: false,
+
+                          onTap: () {},
+                        ),
+                        PrayerItem(
+                          key: "Shubuh",
+                          time: shalat.fajr,
+                          isMuted: true,
+                          isActive: false,
+
+                          onTap: () {},
+                        ),
+                        PrayerItem(
+                          key: "Terbit",
+                          time: shalat.sunrise,
+                          isMuted: false,
+                          isActive: false,
+
+                          onTap: () {},
+                        ),
+                      ];
+
+                      final selectedPrayer =
+                          listShalat.firstWhere((item) {
+                            final now = TimeOfDay.now();
+                            final prayerTime = item.time;
+                            return prayerTime.isAfter(now);
+                          }).key;
+
                       return FutureView(
                         future: LocationService.getCityName(
                           latitude: location.latitude,
@@ -51,6 +141,10 @@ class MainApp extends StatelessWidget {
                                   InfoView(
                                     title: masehi.weekday.en,
                                     subtitle: city,
+                                    onTap: () {
+                                      key = key + 1;
+                                      setState(() {});
+                                    },
                                   ),
                                   InfoView(
                                     title: hijri.day,
@@ -62,44 +156,15 @@ class MainApp extends StatelessWidget {
                                 child: Center(
                                   child: FlowerView(
                                     position: location,
-                                    texts: [
-                                      PainterText(
-                                        title: "Dzuhur",
-                                        subtitle: shalat.dhuhr,
-                                        isMuted: false,
-                                        onTap: () {},
-                                      ),
-                                      PainterText(
-                                        title: "Asr",
-                                        subtitle: shalat.asr,
-                                        isMuted: false,
-                                        onTap: () {},
-                                      ),
-                                      PainterText(
-                                        title: "Magrib",
-                                        subtitle: shalat.maghrib,
-                                        isMuted: false,
-                                        onTap: () {},
-                                      ),
-                                      PainterText(
-                                        title: "Isya",
-                                        subtitle: shalat.isha,
-                                        isMuted: false,
-                                        onTap: () {},
-                                      ),
-                                      PainterText(
-                                        title: "Shubuh",
-                                        subtitle: shalat.fajr,
-                                        isMuted: true,
-                                        onTap: () {},
-                                      ),
-                                      PainterText(
-                                        title: "Terbit",
-                                        subtitle: shalat.sunrise,
-                                        isMuted: false,
-                                        onTap: () {},
-                                      ),
-                                    ],
+                                    texts:
+                                        listShalat.map((item) {
+                                          final isActive =
+                                              item.key == selectedPrayer;
+
+                                          item.isActive = isActive;
+
+                                          return item;
+                                        }).toList(),
                                   ),
                                 ),
                               ),
