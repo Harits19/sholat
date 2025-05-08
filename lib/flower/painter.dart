@@ -27,18 +27,25 @@ class FlowerPainter extends CustomPainter {
 
     final petalColor = colorScheme.surfaceContainerHighest;
 
+    PrayerItem? selectedValue;
+
     for (final item in texts.asMap().entries) {
-      final isActive = item.value.isActive;
+      final now = TimeOfDay.now();
+      final prayerTime = item.value.time;
+
+      if (prayerTime.isAfter(now) && selectedValue == null) {
+        selectedValue = item.value;
+      }
+
+      final isActive = item.value.key == selectedValue?.key;
 
       final Paint paint =
           Paint()
             ..color =
-                isActive
-                    ? theme.colorScheme.primaryContainer
-                    : petalColor;
+                isActive ? theme.colorScheme.primaryContainer : petalColor;
 
       final i = item.key;
-      final text = item.value;
+      final value = item.value;
       final double angle = (2 * pi / numberOfPetals) * i;
       final double x = center.dx + radius * cos(angle);
       final double y = center.dy + radius * sin(angle);
@@ -66,19 +73,27 @@ class FlowerPainter extends CustomPainter {
       petalPaths.add(petal);
 
       // Draw text on each petal
-      final icon = text.icon;
+      final iconSound = !value.sound ? Icons.volume_off : Icons.volume_up;
+      final iconVibration = !value.vibration ? null : Icons.vibration;
+
+      buildIcon(IconData icon) {
+        return TextSpan(
+          text: String.fromCharCode(icon.codePoint),
+          style: TextStyle(fontSize: 12, fontFamily: iconSound.fontFamily),
+        );
+      }
 
       final textPainter = TextPainter(
         text: TextSpan(
-          text: text.key,
+          text: value.key,
           style:
-              isActive ? theme.textTheme.labelLarge : theme.textTheme.bodyMedium,
+              isActive
+                  ? theme.textTheme.labelLarge
+                  : theme.textTheme.bodyMedium,
           children: [
-            TextSpan(text: '\n${text.time.format1()}\n'),
-            TextSpan(
-              text: String.fromCharCode(icon.codePoint),
-              style: TextStyle(fontSize: 12, fontFamily: icon.fontFamily),
-            ),
+            TextSpan(text: '\n${value.time.format1()}\n'),
+            buildIcon(iconSound),
+            if (iconVibration != null) buildIcon(iconVibration),
           ],
         ),
         textAlign: TextAlign.center,

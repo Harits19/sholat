@@ -69,60 +69,6 @@ class _MainAppState extends State<MainApp> {
                       final masehi = date.gregorian;
                       final hijri = date.hijri;
                       final shalat = data.data.timings;
-                      final listShalat = [
-                        PrayerItem(
-                          key: "Dzuhur",
-                          time: shalat.dhuhr,
-                          isMuted: false,
-                          isActive: false,
-                          onTap: () {},
-                        ),
-                        PrayerItem(
-                          key: "Asr",
-                          time: shalat.asr,
-                          isMuted: false,
-                          isActive: false,
-                          onTap: () {},
-                        ),
-                        PrayerItem(
-                          key: "Magrib",
-                          time: shalat.maghrib,
-                          isMuted: false,
-                          isActive: false,
-                          onTap: () {},
-                        ),
-                        PrayerItem(
-                          key: "Isya",
-                          time: shalat.isha,
-                          isMuted: false,
-                          isActive: false,
-
-                          onTap: () {},
-                        ),
-                        PrayerItem(
-                          key: "Shubuh",
-                          time: shalat.fajr,
-                          isMuted: true,
-                          isActive: false,
-
-                          onTap: () {},
-                        ),
-                        PrayerItem(
-                          key: "Terbit",
-                          time: shalat.sunrise,
-                          isMuted: false,
-                          isActive: false,
-
-                          onTap: () {},
-                        ),
-                      ];
-
-                      final selectedPrayer =
-                          listShalat.firstWhere((item) {
-                            final now = TimeOfDay.now();
-                            final prayerTime = item.time;
-                            return prayerTime.isAfter(now);
-                          }).key;
 
                       return FutureView(
                         future: LocationService.getCityName(
@@ -156,15 +102,29 @@ class _MainAppState extends State<MainApp> {
                                 child: Center(
                                   child: FlowerView(
                                     position: location,
-                                    texts:
-                                        listShalat.map((item) {
-                                          final isActive =
-                                              item.key == selectedPrayer;
-
-                                          item.isActive = isActive;
-
-                                          return item;
-                                        }).toList(),
+                                    texts: [
+                                      PrayerItem(
+                                        key: "Dzuhur",
+                                        time: shalat.dhuhr,
+                                      ),
+                                      PrayerItem(key: "Asr", time: shalat.asr),
+                                      PrayerItem(
+                                        key: "Magrib",
+                                        time: shalat.maghrib,
+                                      ),
+                                      PrayerItem(
+                                        key: "Isya",
+                                        time: shalat.isha,
+                                      ),
+                                      PrayerItem(
+                                        key: "Shubuh",
+                                        time: shalat.fajr,
+                                      ),
+                                      PrayerItem(
+                                        key: "Terbit",
+                                        time: shalat.sunrise,
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),

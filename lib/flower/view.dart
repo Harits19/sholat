@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:sholat/flower/model.dart';
 import 'package:sholat/flower/painter.dart';
 import 'package:sholat/location/service.dart';
+import 'package:sholat/time_of_day/service.dart';
 
 class FlowerView extends StatefulWidget {
   const FlowerView({super.key, required this.texts, required this.position});
@@ -56,13 +57,43 @@ class _FlowerViewState extends State<FlowerView> {
     final Offset localPosition = box.globalToLocal(details.globalPosition);
 
     for (int i = 0; i < _painter.petalPaths.length; i++) {
-      if (_painter.petalPaths[i].contains(localPosition)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Tapped on petal: ${_painter.texts[i].key}')),
-        );
-        widget.texts[i].onTap();
-        break;
+      if (!_painter.petalPaths[i].contains(localPosition)) {
+        continue;
       }
+      final selectedValue = widget.texts[i];
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: Text(
+                "${selectedValue.key} ${selectedValue.time.format1()}",
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SwitchListTile(
+                    value: true,
+                    title: Text("Sound"),
+                    onChanged: (value) {},
+                  ),
+                  SwitchListTile(
+                    value: true,
+                    title: Text("Vibration"),
+                    onChanged: (value) {},
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Cancel"),
+                ),
+                TextButton(onPressed: () {}, child: Text("Save")),
+              ],
+            ),
+      );
     }
   }
 
