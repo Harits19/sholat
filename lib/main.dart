@@ -8,6 +8,8 @@ import 'package:sholat/info/view.dart';
 import 'package:sholat/location/service.dart';
 import 'package:sholat/prayer_time/model.dart';
 import 'package:sholat/prayer_time/service.dart';
+import 'package:sholat/shared_pref/model.dart';
+import 'package:sholat/shared_pref/service.dart';
 
 void main() {
   runApp(const MainApp());
@@ -28,9 +30,21 @@ class _MainAppState extends State<MainApp> {
       latitude: location.latitude,
       longitude: location.longitude,
     );
-    await setPrayerTimings(result.data.timings);
+
+    final timings = result.data.timings;
+
+    await setPrayerTimings(timings);
+    // await saveToLocalPreference(timings);
 
     return result;
+  }
+
+  Future<void> saveToLocalPreference(Timings timings) async {
+    final service = await SharedPrefService.create(
+      key: SharedPrefKey.prayerTime,
+    );
+
+    await service.set(timings.toJson());
   }
 
   Future<void> setPrayerTimings(Timings timings) async {
@@ -84,27 +98,27 @@ class _MainAppState extends State<MainApp> {
                         child: (city) {
                           return Column(
                             children: [
-                              // ElevatedButton(
-                              //   onPressed: () async {
-                              //     final now = TimeOfDay.now();
+                              ElevatedButton(
+                                onPressed: () async {
+                                  final now = TimeOfDay.now();
 
-                              //     for (
-                              //       int index = 2;
-                              //       index <= 10;
-                              //       index = index + 2
-                              //     ) {
-                              //       final hour = now.hour;
-                              //       final minute = now.minute + index;
+                                  for (
+                                    int index = 2;
+                                    index <= 10;
+                                    index = index + 2
+                                  ) {
+                                    final hour = now.hour;
+                                    final minute = now.minute + index;
 
-                              //       await AlarmService.setAlarm(
-                              //         hour: hour,
-                              //         minute: minute,
-                              //         id: index,
-                              //       );
-                              //     }
-                              //   },
-                              //   child: Text("data"),
-                              // ),
+                                    await AlarmService.setAlarm(
+                                      hour: hour,
+                                      minute: minute,
+                                      id: index,
+                                    );
+                                  }
+                                },
+                                child: Text("data"),
+                              ),
                               Row(
                                 children: [
                                   InfoView(
