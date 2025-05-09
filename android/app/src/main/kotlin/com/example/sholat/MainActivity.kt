@@ -20,7 +20,8 @@ class MainActivity : FlutterActivity() {
             if (call.method == "setAlarm") {
                 val hour = call.argument<Int>("hour")!!
                 val minute = call.argument<Int>("minute")!!
-                setAlarm(hour, minute)
+                val id = call.argument<Int>("id")!!
+                setAlarm(hour, minute, id)
                 result.success(null)
             } else {
                 result.notImplemented()
@@ -28,11 +29,11 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    private fun setAlarm(hour: Int, minute: Int) {
+    private fun setAlarm(hour: Int, minute: Int, id: Int) {
         val alarmIntent = Intent(this, AlarmReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             this,
-            0,
+            id,
             alarmIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

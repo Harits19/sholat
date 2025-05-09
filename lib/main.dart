@@ -43,8 +43,14 @@ class _MainAppState extends State<MainApp> {
       timings.isha,
     ];
 
-    for (final prayer in prayerTimes) {
-      await AlarmService.setAlarm(hour: prayer.hour, minute: prayer.minute);
+    for (final item in prayerTimes.asMap().entries) {
+      final prayer = item.value;
+      final index = item.key;
+      await AlarmService.setAlarm(
+        hour: prayer.hour,
+        minute: prayer.minute,
+        id: index,
+      );
     }
   }
 
@@ -78,6 +84,27 @@ class _MainAppState extends State<MainApp> {
                         child: (city) {
                           return Column(
                             children: [
+                              // ElevatedButton(
+                              //   onPressed: () async {
+                              //     final now = TimeOfDay.now();
+
+                              //     for (
+                              //       int index = 2;
+                              //       index <= 10;
+                              //       index = index + 2
+                              //     ) {
+                              //       final hour = now.hour;
+                              //       final minute = now.minute + index;
+
+                              //       await AlarmService.setAlarm(
+                              //         hour: hour,
+                              //         minute: minute,
+                              //         id: index,
+                              //       );
+                              //     }
+                              //   },
+                              //   child: Text("data"),
+                              // ),
                               Row(
                                 children: [
                                   InfoView(
